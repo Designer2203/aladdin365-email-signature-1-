@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aladdin365 – Email Signature Generator</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand-blue: #2A3B8D;
+    --brand-cyan: #49C0E8;
+    --brand-purple: #A14A81;
+    --panel: #E1F4FD;
+    --text: #383A3C;
+    --muted: #6B7378;
+    --line: #D5E6EE;
+    --page: #FFFFFF;
+    --card: #FFFFFF;
+    --error: #B42318;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 32px 20px 64px; }
+  header { display: flex; align-items: center; gap: 18px; border-bottom: 2px solid var(--brand-cyan); padding-bottom: 18px; margin-bottom: 28px; }
+  header img { width: 186px; height: 93px; display: block; }
+  header h1 { margin: 0; font-size: 26px; font-weight: 600; color: var(--brand-blue); line-height: 1.2; }
+  header p { margin: 4px 0 0; color: var(--muted); }
+  .card { background: #FAFDFE; border: 1px solid var(--line); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+  h2 { margin: 0 0 16px; font-size: 18px; font-weight: 600; color: var(--brand-blue); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+  label { display: block; font-weight: 500; margin-bottom: 6px; }
+  input {
+    width: 100%; padding: 11px 12px; font: inherit; color: var(--text);
+    border: 1px solid #B9CCD6; border-radius: 6px; background: #fff;
+  }
+  input:focus { outline: 2px solid var(--brand-cyan); outline-offset: 1px; border-color: var(--brand-cyan); }
+  input[aria-invalid="true"] { border-color: var(--error); }
+  .hint { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .err { font-size: 13px; color: var(--error); margin-top: 4px; min-height: 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 20px; }
+  button {
+    font: inherit; font-weight: 500; cursor: pointer; border-radius: 6px; padding: 11px 20px;
+    border: 1px solid var(--brand-blue); background: var(--brand-blue); color: #fff;
+  }
+  button.secondary { background: #fff; color: var(--brand-blue); }
+  button:focus-visible { outline: 2px solid var(--brand-cyan); outline-offset: 2px; }
+  .status { font-weight: 500; color: #1F7A4D; }
+  .status.bad { color: var(--error); }
+  #preview, #preview * { box-sizing: content-box; }
+  .preview-box { overflow-x: auto; background: #fff; border: 1px dashed #B9CCD6; border-radius: 6px; padding: 16px; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .steps h3 { margin: 0 0 8px; font-size: 16px; font-weight: 600; color: var(--brand-purple); }
+  .steps ol { margin: 0; padding-left: 20px; }
+  .steps li { margin-bottom: 6px; }
+  .note { color: var(--muted); font-size: 14px; margin: 16px 0 0; }
+  @media (max-width: 760px) {
+    .grid, .steps { grid-template-columns: 1fr; }
+    header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img src="assets/logo.png" alt="Aladdin365">
+    <div>
+      <h1>Email signature generator</h1>
+      <p>Enter your details, check the preview, then copy the signature into your email app.</p>
+    </div>
+  </header>
+
+  <section class="card" aria-labelledby="details-h">
+    <h2 id="details-h">Your details</h2>
+    <form id="form" novalidate>
+      <div class="grid">
+        <div>
+          <label for="name">Full name</label>
+          <input id="name" maxlength="60" autocomplete="name" placeholder="e.g. Priya Sharma">
+          <div class="err" id="name-err"></div>
+        </div>
+        <div>
+          <label for="designation">Designation</label>
+          <input id="designation" maxlength="60" autocomplete="organization-title" placeholder="e.g. Business Development Manager">
+          <div class="err" id="designation-err"></div>
+        </div>
+        <div>
+          <label for="phone">Phone number</label>
+          <input id="phone" maxlength="25" type="tel" autocomplete="tel" placeholder="+91 98765 43210">
+          <div class="hint">Include the country code, e.g. +91 98765 43210</div>
+          <div class="err" id="phone-err"></div>
+        </div>
+        <div>
+          <label for="email">Work email</label>
+          <input id="email" maxlength="60" type="email" autocomplete="email" placeholder="name@aladdin365.com">
+          <div class="err" id="email-err"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit">Generate signature</button>
+        <button type="button" class="secondary" id="reset">Clear</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card" aria-labelledby="preview-h">
+    <h2 id="preview-h">Your signature</h2>
+    <div class="preview-box"><div id="preview"></div></div>
+    <div class="actions">
+      <button type="button" id="copy">Copy signature</button>
+      <button type="button" class="secondary" id="copy-code">Copy HTML code</button>
+      <span class="status" id="status" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="howto-h">
+    <h2 id="howto-h">How to paste it</h2>
+    <div class="steps">
+      <div>
+        <h3>Gmail</h3>
+        <ol>
+          <li>Click <strong>Copy signature</strong> above.</li>
+          <li>Open Gmail, click the gear icon, then <strong>See all settings</strong>.</li>
+          <li>On the <strong>General</strong> tab, scroll to <strong>Signature</strong> and click <strong>Create new</strong> (or select your existing one).</li>
+          <li>Click inside the editor box and press Ctrl+V (Cmd+V on Mac).</li>
+          <li>Under <strong>Signature defaults</strong>, choose it for new emails and replies.</li>
+          <li>Click <strong>Save Changes</strong> at the bottom of the page.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Outlook (desktop)</h3>
+        <ol>
+          <li>Click <strong>Copy signature</strong> above.</li>
+          <li>In Outlook go to <strong>File → Options → Mail → Signatures</strong>.</li>
+          <li>Click <strong>New</strong>, name it, click in the editing box and paste.</li>
+          <li>Set it as default for new messages and replies, then click <strong>OK</strong>.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Apple Mail</h3>
+        <ol>
+          <li>Click <strong>Copy signature</strong> above.</li>
+          <li>Open <strong>Mail → Settings → Signatures</strong> and click <strong>+</strong>.</li>
+          <li>Untick <strong>Always match my default message font</strong>, then paste into the right-hand box.</li>
+          <li>Close the window and choose the signature when writing a message.</li>
+        </ol>
+      </div>
+    </div>
+    <p class="note">If the images don’t appear after pasting, check your internet connection and paste again. Send a test email to yourself to check the result.</p>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  // Images must load from the public website, so the copied signature uses full web addresses.
+  // On Vercel this is detected automatically. FALLBACK_BASE is used only when the page is opened from your computer.
+  var FALLBACK_BASE = 'https://aladdin365-email-signature.vercel.app';
+  var online = /^https?:$/.test(location.protocol);
+  var BASE = online ? location.origin : FALLBACK_BASE;
+  var PREVIEW_BASE = online ? location.origin : '.';
+
+  var LINKS = {
+    website: 'https://www.aladdin365.com',
+    itme: 'https://corporate.india-itme.com/itme2026/',
+    facebook: 'https://www.facebook.com/profile.php?id=100077367064584',
+    instagram: 'https://www.instagram.com/_aladdin365?evlk=MXQxNWU0NzhsNmwwbQ==',
+    linkedin: 'https://www.linkedin.com/company/aladdin365/'
+  };
+
+  var fields = ['name', 'designation', 'phone', 'email'];
+  var el = {};
+  fields.forEach(function (f) { el[f] = document.getElementById(f); });
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // Long text is made slightly smaller so it always fits in its column, like the design.
+  var BASE_SIZE = 13.8, MAX_W = 288, measureCtx = document.createElement('canvas').getContext('2d');
+  function fitSize(text, bold) {
+    var size = bold ? 14 : BASE_SIZE;
+    measureCtx.font = (bold ? '700 ' : '400 ') + size + "px 'Montserrat', Arial, sans-serif";
+    var w = measureCtx.measureText(text).width;
+    if (w <= MAX_W) return size;
+    return Math.max(10, Math.floor(size * MAX_W / w * 2) / 2);
+  }
+
+  function values() {
+    return {
+      name: el.name.value.trim() || '[Employee Name]',
+      designation: el.designation.value.trim() || '[Designation]',
+      phone: el.phone.value.trim() || '[Phone Number]',
+      email: el.email.value.trim() || '[Work Email]'
+    };
+  }
+
+  function buildSignature(v, base) {
+    var A = base + '/assets/';
+    var txt = "font-family:'Montserrat', Arial, Helvetica, sans-serif; font-size:13.8px; line-height:17px; font-weight:400; color:#383A3C;";
+    function t(text, bold) {
+      var s = txt.replace('font-size:13.8px', 'font-size:' + fitSize(text, bold) + 'px');
+      return bold ? s.replace('font-weight:400', 'font-weight:700') : s;
+    }
+    var img = 'display:block; border:0; outline:none;';
+    var tel = v.phone.replace(/[^\d+]/g, '');
+    return '' +
+'<table cellpadding="0" cellspacing="0" border="0" width="1000" style="width:1000px; border-collapse:collapse; background-color:#ffffff;">' +
+ '<tr><td style="padding:0;">' +
+  '<table cellpadding="0" cellspacing="0" border="0" width="1000" style="width:1000px; border-collapse:collapse;"><tr>' +
+   '<td width="236" height="124" valign="top" style="width:236px; height:124px; padding:0; line-height:0; font-size:0;">' +
+    '<a href="' + LINKS.website + '" target="_blank" style="text-decoration:none;"><img src="' + A + 'logo.png" width="236" height="124" alt="Aladdin365" style="' + img + ' width:236px; height:124px;"></a></td>' +
+   '<td width="26" height="124" style="width:26px; height:124px; padding:0; line-height:0; font-size:0; background-color:#ffffff;">&nbsp;</td>' +
+   '<td width="295" height="124" valign="top" style="width:295px; height:124px; padding:0; background-color:#ffffff; white-space:nowrap; ' + txt + '">' +
+    '<div style="margin:15px 0 0 0; ' + t(v.name, true) + '">' + esc(v.name) + '</div>' +
+    '<div style="margin:1px 0 0 0; ' + t(v.designation + ' | Aladdin365') + '">' + esc(v.designation) + ' | Aladdin365</div>' +
+    '<div style="margin:13px 0 0 0; ' + t(v.phone) + '"><a href="tel:' + esc(tel) + '" style="color:#383A3C; text-decoration:none;">' + esc(v.phone) + '</a></div>' +
+    '<div style="margin:0; ' + t(v.email) + '"><a href="mailto:' + esc(v.email) + '" style="color:#383A3C; text-decoration:none;">' + esc(v.email) + '</a></div>' +
+    '<div style="margin:0; ' + txt + '"><a href="' + LINKS.website + '" target="_blank" style="color:#383A3C; text-decoration:none;">www.aladdin365.com</a></div>' +
+   '</td>' +
+   '<td width="443" height="124" valign="top" style="width:443px; height:124px; padding:0; line-height:0; font-size:0; background-color:#E1F4FD;">' +
+    '<a href="' + LINKS.itme + '" target="_blank" style="text-decoration:none;"><img src="' + A + 'itme-section.png" width="443" height="124" alt="Official Media Partner - INDIA ITME 2026 | 4th - 9th December 2026 | Hall No: 12, Stall No: C37" style="' + img + ' width:443px; height:124px;"></a></td>' +
+  '</tr></table>' +
+ '</td></tr>' +
+ '<tr><td height="2" style="height:2px; padding:0; background-color:#49C0E8; line-height:2px; font-size:2px;">&nbsp;</td></tr>' +
+ '<tr><td style="padding:0;">' +
+  '<table cellpadding="0" cellspacing="0" border="0" width="1000" style="width:1000px; border-collapse:collapse;"><tr>' +
+   '<td width="530" height="34" style="width:530px; height:34px; padding:0; line-height:0; font-size:0;"><img src="' + A + 'tagline.png" width="530" height="34" alt="CONNECTING THE TEXTILE &amp; APPAREL INDUSTRY | Connect. Discover. Learn. Grow" style="' + img + ' width:530px; height:34px;"></td>' +
+   '<td width="33" height="34" style="width:33px; height:34px; padding:0; line-height:0; font-size:0;"><a href="' + LINKS.facebook + '" target="_blank" style="text-decoration:none;"><img src="' + A + 'icon-facebook.png" width="33" height="34" alt="Facebook" style="' + img + ' width:33px; height:34px;"></a></td>' +
+   '<td width="33" height="34" style="width:33px; height:34px; padding:0; line-height:0; font-size:0;"><a href="' + LINKS.instagram + '" target="_blank" style="text-decoration:none;"><img src="' + A + 'icon-instagram.png" width="33" height="34" alt="Instagram" style="' + img + ' width:33px; height:34px;"></a></td>' +
+   '<td width="34" height="34" style="width:34px; height:34px; padding:0; line-height:0; font-size:0;"><a href="' + LINKS.linkedin + '" target="_blank" style="text-decoration:none;"><img src="' + A + 'icon-linkedin.png" width="34" height="34" alt="LinkedIn" style="' + img + ' width:34px; height:34px;"></a></td>' +
+   '<td width="370" height="34" style="width:370px; height:34px; padding:0; line-height:0; font-size:0; background-color:#ffffff;">&nbsp;</td>' +
+  '</tr></table>' +
+ '</td></tr>' +
+'</table>';
+  }
+
+  var preview = document.getElementById('preview');
+  var status = document.getElementById('status');
+
+  function render() {
+    preview.innerHTML = buildSignature(values(), PREVIEW_BASE);
+  }
+
+  function setStatus(msg, bad) {
+    status.textContent = msg;
+    status.className = 'status' + (bad ? ' bad' : '');
+  }
+
+  function validate() {
+    var ok = true;
+    var checks = {
+      name: el.name.value.trim() ? '' : 'Please enter your full name.',
+      designation: el.designation.value.trim() ? '' : 'Please enter your designation.',
+      phone: /^\+?[\d\s\-()]{7,}$/.test(el.phone.value.trim()) ? '' : 'Please enter a phone number with country code.',
+      email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.email.value.trim()) ? '' : 'Please enter a valid email address.'
+    };
+    fields.forEach(function (f) {
+      document.getElementById(f + '-err').textContent = checks[f];
+      el[f].setAttribute('aria-invalid', checks[f] ? 'true' : 'false');
+      if (checks[f]) ok = false;
+    });
+    if (!ok) {
+      var first = fields.filter(function (f) { return checks[f]; })[0];
+      el[first].focus();
+    }
+    return ok;
+  }
+
+  function fallbackCopy(html, asRich) {
+    var holder = document.createElement(asRich ? 'div' : 'textarea');
+    holder.style.position = 'fixed'; holder.style.left = '-9999px'; holder.style.top = '0';
+    if (asRich) { holder.innerHTML = html; holder.contentEditable = 'true'; } else { holder.value = html; }
+    document.body.appendChild(holder);
+    if (asRich) {
+      var range = document.createRange(); range.selectNodeContents(holder);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    } else { holder.select(); }
+    var done = false;
+    try { done = document.execCommand('copy'); } catch (e) {}
+    window.getSelection().removeAllRanges();
+    document.body.removeChild(holder);
+    return done;
+  }
+
+  function copySignature() {
+    if (!validate()) { setStatus('Please fill in all your details first.', true); return; }
+    var html = buildSignature(values(), BASE);
+    var plain = [values().name, values().designation + ' | Aladdin365', values().phone, values().email, 'www.aladdin365.com'].join('\n');
+    if (navigator.clipboard && window.ClipboardItem) {
+      navigator.clipboard.write([new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([plain], { type: 'text/plain' })
+      })]).then(function () {
+        setStatus('Signature copied. Now paste it into your email signature settings.');
+      }, function () {
+        setStatus(fallbackCopy(html, true) ? 'Signature copied. Now paste it into your email signature settings.' : 'Copy failed. Please select the preview and copy it manually.', false);
+      });
+    } else {
+      var ok = fallbackCopy(html, true);
+      setStatus(ok ? 'Signature copied. Now paste it into your email signature settings.' : 'Copy failed. Please select the preview and copy it manually.', !ok);
+    }
+  }
+
+  function copyCode() {
+    if (!validate()) { setStatus('Please fill in all your details first.', true); return; }
+    var html = buildSignature(values(), BASE);
+    var done = function () { setStatus('HTML code copied.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(html).then(done, function () { fallbackCopy(html, false) ? done() : setStatus('Copy failed.', true); });
+    } else { fallbackCopy(html, false) ? done() : setStatus('Copy failed.', true); }
+  }
+
+  fields.forEach(function (f) {
+    el[f].addEventListener('input', function () { render(); setStatus(''); });
+  });
+  document.getElementById('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    render();
+    if (validate()) {
+      setStatus('Signature ready. Click “Copy signature”.');
+      document.getElementById('preview-h').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+  document.getElementById('reset').addEventListener('click', function () {
+    fields.forEach(function (f) {
+      el[f].value = ''; el[f].setAttribute('aria-invalid', 'false');
+      document.getElementById(f + '-err').textContent = '';
+    });
+    setStatus(''); render(); el.name.focus();
+  });
+  document.getElementById('copy').addEventListener('click', copySignature);
+  document.getElementById('copy-code').addEventListener('click', copyCode);
+
+  render();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body>
+</html>
